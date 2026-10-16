@@ -29,7 +29,7 @@ public class DataInitializer {
             novo.setPassword(encoder.encode("teste123"));
             return novo;
         });
-        if (u.getRole() == null) {   // corrige o admin antigo que foi criado sem perfil
+        if (u.getRole() == null) { 
             u.setRole(perfil);
         }
         repo.save(u);
