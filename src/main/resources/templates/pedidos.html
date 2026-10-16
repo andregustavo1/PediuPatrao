@@ -1,77 +1,99 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Lista de Pedidos</title>
-</head>
 <body>
-
 <div th:fragment="content">
+    <h2 class="fw-bold mb-4"><i class="bi bi-bag me-2 text-primary"></i>Pedidos</h2>
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold mb-0">
-            <i class="bi bi-bag me-2 text-primary"></i>Pedidos
-        </h2>
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h5>Novo pedido</h5>
+            <select id="cliente" class="form-select mb-3">
+                <option value="">Selecione o cliente</option>
+                <option th:each="c : ${clientes}" th:value="${c.id}" th:text="${c.nome}"></option>
+            </select>
+            <div class="row g-2 mb-3">
+                <div class="col-md-3" th:each="p : ${produtos}">
+                    <label class="form-label small" th:text="${p.nome + ' — R$ ' + p.preco}"></label>
+                    <input type="number" min="0" value="0" class="form-control qtd" th:data-produto="${p.id}">
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="criarPedido()">Registrar pedido</button>
+        </div>
     </div>
 
-    <!-- Mensagens de feedback -->
-    <div class="alert alert-success alert-dismissible fade show" th:if="${sucesso}" role="alert">
-        <i class="bi bi-check-circle-fill me-2"></i>
-        <span th:text="${sucesso}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-    <div class="alert alert-danger alert-dismissible fade show" th:if="${erro}" role="alert">
-        <i class="bi bi-exclamation-triangle-fill me-2"></i>
-        <span th:text="${erro}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-
-    <!-- Tabela -->
     <div class="card shadow-sm">
         <div class="card-body p-0">
-            <table class="table table-hover align-middle mb-0">
+            <table class="table table-sm table-hover align-middle mb-0">
                 <thead class="table-dark">
                     <tr>
-                        <th class="ps-4">ID</th>
-                        <th>Cliente ID</th>
-                        <th>Tipo de Pizza</th>
-                        <th>Sabor</th>
-                        <th>Quantidade</th>
+                        <th class="ps-3">Cliente</th>
+                        <th>Itens</th>
+                        <th>Total</th>
                         <th>Status</th>
+                        <th>Entrada</th>
+                        <th>Saída</th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Lista vazia -->
                     <tr th:if="${#lists.isEmpty(pedidos)}">
-                        <td colspan="6" class="text-center text-muted py-5">
-                            <i class="bi bi-inbox fs-3 d-block mb-2"></i>
-                            Nenhum pedido encontrado.
-                        </td>
+                        <td colspan="7" class="text-center text-muted py-4">Nenhum pedido.</td>
                     </tr>
-                    <!-- Linhas -->
-                    <tr th:each="pedido : ${pedidos}">
-                        <td class="ps-4 text-muted" th:text="${pedido.id}"></td>
-                        <td th:text="${pedido.clienteId}"></td>
-                        <td th:text="${pedido.tipoPizza}"></td>
-                        <td th:text="${pedido.sabor}"></td>
-                        <td th:text="${pedido.quantidade}"></td>
+                    <tr th:each="p : ${pedidos}">
+                        <td class="ps-3" th:text="${p.clienteNome}"></td>
+                        <td><div class="small" th:each="i : ${p.itens}" th:text="${i.quantidade + 'x ' + i.nomeProduto}"></div></td>
                         <td>
-                            <span class="badge"
-                                  th:classappend="${pedido.status == 'ENTREGUE'} ? 'bg-success' :
-                                                  (${pedido.status == 'CANCELADO'} ? 'bg-danger' :
-                                                  (${pedido.status == 'EM_PREPARO'} ? 'bg-warning text-dark' : 'bg-secondary'))"
-                                  th:text="${pedido.status}">
-                            </span>
+                            <span th:text="${'R$ ' + p.total}"></span>
+                            <small class="text-muted" th:if="${p.percentualDesconto > 0}" th:text="${'(-' + p.percentualDesconto + '%)'}"></small>
+                        </td>
+                        <td>
+                            <span class="badge" th:classappend="${p.status.name() == 'CANCELADO'} ? 'bg-danger' : 'bg-primary'" th:text="${p.status}"></span>
+                            <div class="small text-muted" th:if="${p.justificativaCancelamento}" th:text="${p.justificativaCancelamento}"></div>
+                        </td>
+                        <td class="small" th:text="${p.responsavelEntrada + ' ' + #temporals.format(p.dataHoraEntrada, 'dd/MM HH:mm')}"></td>
+                        <td class="small" th:text="${p.dataHoraSaida != null} ? ${p.responsavelSaida + ' ' + #temporals.format(p.dataHoraSaida, 'dd/MM HH:mm')} : '—'"></td>
+                        <td class="text-nowrap">
+                            <select class="form-select form-select-sm d-inline w-auto" th:id="${'st-' + p.id}">
+                                <option>EM_PREPARACAO</option>
+                                <option>PRONTO</option>
+                                <option>SAIU_PARA_ENTREGA</option>
+                                <option>RETIRADO</option>
+                                <option>FINALIZADO</option>
+                            </select>
+                            <button class="btn btn-sm btn-outline-primary" th:data-id="${p.id}" onclick="mudarStatus(this.dataset.id)">OK</button>
+                            <button class="btn btn-sm btn-outline-warning" th:data-id="${p.id}" onclick="desconto(this.dataset.id)">%</button>
+                            <button class="btn btn-sm btn-outline-danger" th:data-id="${p.id}" onclick="cancelar(this.dataset.id)">Cancelar</button>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
-        <div class="card-footer text-muted small" th:if="${!#lists.isEmpty(pedidos)}">
-            Total: <strong th:text="${#lists.size(pedidos)}"></strong> pedido(s)
-        </div>
     </div>
 
-</div>
+    <script>
+        function criarPedido() {
+            const itens = [...document.querySelectorAll('.qtd')]
+                .filter(i => Number(i.value) > 0)
+                .map(i => ({ produtoId: i.dataset.produto, quantidade: Number(i.value) }));
+            const clienteId = document.getElementById('cliente').value;
+            enviar('/api/pedidos', 'POST', { clienteId, itens });
+        }
 
+        function mudarStatus(id) {
+            const status = document.getElementById('st-' + id).value;
+            enviar(`/api/pedidos/${id}/status?status=${status}`, 'PUT');
+        }
+
+        function desconto(id) {
+            const percentual = prompt('Percentual de desconto (máx. 20):');
+            enviar(`/api/pedidos/${id}/desconto`, 'POST', { percentual: Number(percentual) });
+        }
+
+        function cancelar(id) {
+            const justificativa = prompt('Justificativa do cancelamento:');
+            enviar(`/api/pedidos/${id}/cancelar`, 'POST', { justificativa });
+        }
+    </script>
+</div>
 </body>
 </html>

@@ -21,6 +21,7 @@
 
     <properties>
         <java.version>21</java.version> <!-- ✅ Java 21 LTS recomendado -->
+        <lombok.version>1.18.42</lombok.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <start-class>com.umc.pediupatrao.PizzariaPedidosApplication</start-class>
     </properties>
@@ -51,7 +52,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.36</version> <!-- ✅ versão correta -->
+            <version>${lombok.version}</version> 
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -76,6 +77,19 @@
                     <mainClass>com.umc.pediupatrao.PizzariaPedidosApplication</mainClass>
                 </configuration>
             </plugin>
+            <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+                <annotationProcessorPaths>
+                    <path>
+                        <groupId>org.projectlombok</groupId>
+                        <artifactId>lombok</artifactId>
+                        <version>${lombok.version}</version>
+                    </path>
+                </annotationProcessorPaths>
+            </configuration>
+        </plugin>
         </plugins>
     </build>
 
