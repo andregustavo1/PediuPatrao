@@ -10,10 +10,13 @@ public class Usuario {
     @Id
     private String id;
     private String username; // Nome de usuário para login
-    
+
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password; // Senha criptografada
-    private String role;     // Papel do usuário, como ADMIN ou USER
+    private Perfil role;
+
+    public Perfil getRole() { return role; }
+    public void setRole(Perfil role) { this.role = role; }
 
     public String getId() {
         return id;
@@ -37,14 +40,6 @@ public class Usuario {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
     }
     
     
