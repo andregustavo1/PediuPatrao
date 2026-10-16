@@ -48,7 +48,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // Desativa CSRF para REST APIs
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login", "/css/**", "/dist/**", "/plugins/**", "/js/**", "/images/**").permitAll()
-                        .requestMatchers("/api/usuarios").permitAll()
+                        // .requestMatchers("/api/usuarios").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
