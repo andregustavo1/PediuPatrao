@@ -6,6 +6,7 @@ import com.umc.pediupatrao.entity.Cliente;
 import com.umc.pediupatrao.entity.Pedido;
 import com.umc.pediupatrao.entity.Produto;
 import com.umc.pediupatrao.entity.Usuario;
+import com.umc.pediupatrao.service.AuditoriaService;
 import com.umc.pediupatrao.service.ClienteService;
 import com.umc.pediupatrao.service.PedidoService;
 import com.umc.pediupatrao.service.ProdutoService;
@@ -26,7 +27,14 @@ public class HomeController {
     private static final Logger log = LoggerFactory.getLogger(HomeController.class);
 
     @Autowired
-    private PedidoService pedidoService;
+    private AuditoriaService auditoriaService;
+
+    @GetMapping("/auditoria")
+    public String auditoria(Model model) {
+        model.addAttribute("registros", auditoriaService.listar());
+        model.addAttribute("content", "auditoria :: content");
+        return "layout";
+    }
 
     @Autowired
     private ClienteService clienteService;
