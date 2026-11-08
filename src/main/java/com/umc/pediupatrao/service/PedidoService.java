@@ -1,4 +1,4 @@
-package com.umc.pediupatrao.service;
+﻿package com.umc.pediupatrao.service;
 
 import com.umc.pediupatrao.dto.PedidoRequest;
 import com.umc.pediupatrao.entity.Alteracao;
@@ -17,26 +17,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
-
 @Service
 public class PedidoService {
-
     @Autowired
     private PedidoRepository pedidoRepository;
-
     @Autowired
     private ProdutoRepository produtoRepository;
-
     @Autowired
     private ClienteRepository clienteRepository;
-
     @Autowired
     private AuditoriaService auditoria;
-
     public List<Pedido> listarPedidos() {
         return pedidoRepository.findAll(Sort.by(Sort.Direction.DESC, "dataHoraEntrada"));
     }
-
     public Pedido criarPedido(PedidoRequest req) {
         Cliente cliente = clienteRepository.findById(req.clienteId()).orElseThrow();
         Pedido pedido = new Pedido();
@@ -56,7 +49,6 @@ public class PedidoService {
                 Alteracao.de("total", null, salvo.getTotal())), null);
         return salvo;
     }
-
     public Pedido atualizarStatus(String id, String status) {
         Pedido pedido = buscar(id);
         StatusPedido anterior = pedido.getStatus();
@@ -66,7 +58,6 @@ public class PedidoService {
                 Alteracao.de("status", anterior, pedido.getStatus())), null);
         return pedido;
     }
-
     @PreAuthorize("hasRole('GERENTE')")
     public Pedido aplicarDesconto(String id, BigDecimal percentual) {
         Pedido pedido = buscar(id);
@@ -79,7 +70,6 @@ public class PedidoService {
                 Alteracao.de("total", totalAnterior, pedido.getTotal())), null);
         return pedido;
     }
-
     @PreAuthorize("hasRole('GERENTE')")
     public Pedido cancelar(String id, String justificativa) {
         Pedido pedido = buscar(id);
@@ -90,7 +80,6 @@ public class PedidoService {
                 Alteracao.de("status", anterior, pedido.getStatus())), justificativa);
         return pedido;
     }
-
     private Pedido buscar(String id) {
         return pedidoRepository.findById(id).orElseThrow();
     }

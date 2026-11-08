@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="content">
+    <section class="dashboard-shell">
+        <header class="dashboard-header">
+            <div>
+                <p class="dashboard-eyebrow">Visão geral</p>
+                <h1>Dashboard</h1>
+                <p class="dashboard-subtitle">Acompanhe o desempenho da sua operação.</p>
+            </div>
+            <button id="atualizar-dashboard" class="dashboard-button dashboard-button-secondary">
+                <i class="ri-refresh-line"></i>
+                <span>Atualizar</span>
+            </button>
+        </header>
+
+        <section class="dashboard-filters" aria-label="Filtros do dashboard">
+            <div class="dashboard-field">
+                <label for="dataInicio">Data inicial</label>
+                <input id="dataInicio" type="date">
+            </div>
+            <div class="dashboard-field">
+                <label for="dataFim">Data final</label>
+                <input id="dataFim" type="date">
+            </div>
+            <div class="dashboard-field">
+                <label for="status">Status</label>
+                <select id="status">
+                    <option value="">Todos</option>
+                    <option value="RECEBIDO">Recebido</option>
+                    <option value="EM_PREPARACAO">Em preparação</option>
+                    <option value="PRONTO">Pronto</option>
+                    <option value="SAIU_PARA_ENTREGA">Saiu para entrega</option>
+                    <option value="RETIRADO">Retirado</option>
+                    <option value="FINALIZADO">Finalizado</option>
+                    <option value="CANCELADO">Cancelado</option>
+                </select>
+            </div>
+            <div class="dashboard-field dashboard-field-product">
+                <label for="produtoId">Produto</label>
+                <select id="produtoId">
+                    <option value="">Todos</option>
+                </select>
+            </div>
+            <button id="filtrar-dashboard" class="dashboard-button dashboard-button-primary">
+                <i class="ri-equalizer-2-line"></i>
+                <span>Filtrar</span>
+            </button>
+        </section>
+
+        <section class="dashboard-statistics" aria-label="Resumo">
+            <article class="dashboard-stat-card">
+                <div class="dashboard-stat-icon dashboard-stat-icon-blue"><i class="ri-money-dollar-circle-line"></i></div>
+                <p>Faturamento</p>
+                <strong id="faturamento-total">R$ 0,00</strong>
+            </article>
+            <article class="dashboard-stat-card">
+                <div class="dashboard-stat-icon dashboard-stat-icon-green"><i class="ri-shopping-bag-3-line"></i></div>
+                <p>Pedidos</p>
+                <strong id="quantidade-pedidos">0</strong>
+            </article>
+            <article class="dashboard-stat-card">
+                <div class="dashboard-stat-icon dashboard-stat-icon-orange"><i class="ri-receipt-line"></i></div>
+                <p>Ticket médio</p>
+                <strong id="ticket-medio">R$ 0,00</strong>
+            </article>
+            <article class="dashboard-stat-card">
+                <div class="dashboard-stat-icon dashboard-stat-icon-red"><i class="ri-close-circle-line"></i></div>
+                <p>Cancelados</p>
+                <strong id="pedidos-cancelados">0</strong>
+            </article>
+        </section>
+
+        <section class="dashboard-grid dashboard-grid-main">
+            <article class="dashboard-panel dashboard-panel-large">
+                <div class="dashboard-panel-header">
+                    <div>
+                        <h2>Vendas no tempo</h2>
+                        <p>Receita por dia no período selecionado</p>
+                    </div>
+                    <i class="ri-line-chart-line"></i>
+                </div>
+                <div class="dashboard-chart dashboard-chart-sales"><canvas id="vendas-chart"></canvas></div>
+            </article>
+            <article class="dashboard-panel">
+                <div class="dashboard-panel-header">
+                    <div>
+                        <h2>Pedidos por status</h2>
+                        <p>Distribuição atual dos pedidos</p>
+                    </div>
+                    <i class="ri-pie-chart-line"></i>
+                </div>
+                <div class="dashboard-chart dashboard-chart-status"><canvas id="status-chart"></canvas></div>
+            </article>
+        </section>
+
+        <section class="dashboard-grid dashboard-grid-secondary">
+            <article class="dashboard-panel">
+                <div class="dashboard-panel-header">
+                    <div>
+                        <h2>Produtos mais vendidos</h2>
+                        <p>Itens com maior saída</p>
+                    </div>
+                    <i class="ri-bar-chart-box-line"></i>
+                </div>
+                <div class="dashboard-chart dashboard-chart-products"><canvas id="produtos-chart"></canvas></div>
+            </article>
+            <article class="dashboard-panel dashboard-orders-panel">
+                <div class="dashboard-panel-header">
+                    <div>
+                        <h2>Pedidos recentes</h2>
+                        <p>Últimos pedidos registrados</p>
+                    </div>
+                    <i class="ri-time-line"></i>
+                </div>
+                <div class="dashboard-table-wrapper">
+                    <table class="dashboard-table">
+                        <thead><tr><th>Cliente</th><th>Total</th><th>Status</th><th>Entrada</th></tr></thead>
+                        <tbody id="pedidos-recentes"></tbody>
+                    </table>
+                </div>
+            </article>
+        </section>
+    </section>
+
+    <script th:src="@{/plugins/chart.js/Chart.min.js}"></script>
+    <script th:src="@{/js/dashboard.js}"></script>
+</div>
+</body>
+</html>

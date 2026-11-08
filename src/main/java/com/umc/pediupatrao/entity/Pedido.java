@@ -1,4 +1,4 @@
-package com.umc.pediupatrao.entity;
+﻿package com.umc.pediupatrao.entity;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -32,17 +32,18 @@ public class Pedido {
     private LocalDateTime dataHoraCancelamento;
     private String justificativaCancelamento;
 
+
     public void calcularTotal() {
         subtotal = itens.stream().map(ItemPedido::getSubtotal).reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal desconto = subtotal.multiply(percentualDesconto).divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
         total = subtotal.subtract(desconto);
     }
-
     public void mudarStatus(StatusPedido novo, String usuario) {
         if (!status.podeIrPara(novo)) {
-            throw new IllegalStateException("Transição inválida: " + status + " -> " + novo);
+            throw new IllegalStateException("Transicao invalida: " + status + " -> " + novo);
         }
         status = novo;
+
         if (novo == StatusPedido.SAIU_PARA_ENTREGA || novo == StatusPedido.RETIRADO) {
             responsavelSaida = usuario;
             dataHoraSaida = LocalDateTime.now();
@@ -51,21 +52,23 @@ public class Pedido {
 
     public void aplicarDesconto(BigDecimal percentual) {
         if (!status.antesDaSaida()) {
-            throw new IllegalStateException("Desconto só é permitido antes da saída");
+            throw new IllegalStateException("Desconto so e permitido antes da saida");
         }
+
         if (percentual == null || percentual.signum() <= 0 || percentual.compareTo(LIMITE_DESCONTO) > 0) {
-            throw new IllegalArgumentException("Desconto deve ser maior que 0 e no máximo 20%");
+            throw new IllegalArgumentException("Desconto deve ser maior que 0 e no maximo 20%");
         }
         percentualDesconto = percentual;
         calcularTotal();
     }
 
+
     public void cancelar(String justificativa, String usuario) {
         if (justificativa == null || justificativa.isBlank()) {
-            throw new IllegalArgumentException("Justificativa obrigatória");
+            throw new IllegalArgumentException("Justificativa obrigatoria");
         }
         if (!status.antesDaSaida()) {
-            throw new IllegalStateException("Pedido não pode mais ser cancelado");
+            throw new IllegalStateException("Pedido nao pode mais ser cancelado");
         }
         status = StatusPedido.CANCELADO;
         justificativaCancelamento = justificativa;
