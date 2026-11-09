@@ -1,4 +1,4 @@
-# PediuPatrão — Atividade M1
+# PediuPatrão
 
 ## Como rodar
 1. Java 21
