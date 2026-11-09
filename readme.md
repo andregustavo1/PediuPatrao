@@ -278,3 +278,7 @@ Para rodar: `./mvnw.cmd test`
 
 
 ## Vídeo
+
+
+https://github.com/user-attachments/assets/94964c17-2f70-4e49-8e24-176f6e8dd03f
+
