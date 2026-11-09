@@ -14,6 +14,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.ArithmeticOperators;
+import org.springframework.data.mongodb.core.aggregation.ConditionalOperators;
+import org.springframework.data.mongodb.core.aggregation.ConvertOperators;
 import org.springframework.data.mongodb.core.aggregation.DateOperators;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -31,11 +34,15 @@ public class DashboardService {
     public Map<String, Object> resumo(LocalDate dataInicio, LocalDate dataFim, String status, String produtoId) {
         List<org.springframework.data.mongodb.core.aggregation.AggregationOperation> etapas = new ArrayList<>();
         adicionarFiltro(etapas, dataInicio, dataFim, status, produtoId);
+        etapas.add(Aggregation.project()
+                .and("status").as("status")
+                .and(ConvertOperators.Convert.convertValueOf("total")
+                        .to("decimal").onErrorReturn(BigDecimal.ZERO).onNullReturn(BigDecimal.ZERO)).as("total"));
         etapas.add(Aggregation.group()
                 .sum("total").as("faturamentoTotal")
                 .count().as("quantidadePedidos")
                 .avg("total").as("ticketMedio")
-                .sum(org.springframework.data.mongodb.core.aggregation.ConditionalOperators
+                .sum(ConditionalOperators
                         .when(Criteria.where("status").is("CANCELADO")).then(1).otherwise(0))
                 .as("cancelados"));
 
@@ -74,7 +81,9 @@ public class DashboardService {
                 : agrupamento.equals("semana") ? "%G-W%V" : "%Y-%m-%d";
         List<org.springframework.data.mongodb.core.aggregation.AggregationOperation> etapas = new ArrayList<>();
         adicionarFiltro(etapas, dataInicio, dataFim, status, produtoId);
-        etapas.add(Aggregation.project("total")
+        etapas.add(Aggregation.project()
+                .and(ConvertOperators.Convert.convertValueOf("total")
+                        .to("decimal").onErrorReturn(BigDecimal.ZERO).onNullReturn(BigDecimal.ZERO)).as("total")
                 .and(DateOperators.DateToString.dateOf("dataHoraEntrada").toString(formato)).as("periodo"));
         etapas.add(Aggregation.group("periodo").sum("total").as("total").count().as("quantidade"));
         etapas.add(Aggregation.project("total", "quantidade").and("_id").as("periodo").andExclude("_id"));
@@ -98,10 +107,15 @@ public class DashboardService {
         List<org.springframework.data.mongodb.core.aggregation.AggregationOperation> etapas = new ArrayList<>();
         adicionarFiltro(etapas, dataInicio, dataFim, status, produtoId);
         etapas.add(Aggregation.unwind("itens"));
-        etapas.add(Aggregation.group("itens.nomeProduto")
-                .sum("itens.quantidade").as("qtd")
-                .sum(org.springframework.data.mongodb.core.aggregation.ArithmeticOperators.Multiply
-                        .valueOf("itens.quantidade").multiplyBy("itens.precoUnitario")).as("receita"));
+        etapas.add(Aggregation.project()
+                .and("itens.nomeProduto").as("nomeProduto")
+                .and(ConvertOperators.Convert.convertValueOf("itens.quantidade")
+                        .to("int").onErrorReturn(0).onNullReturn(0)).as("qtd")
+                .and(ConvertOperators.Convert.convertValueOf("itens.precoUnitario")
+                        .to("decimal").onErrorReturn(BigDecimal.ZERO).onNullReturn(BigDecimal.ZERO)).as("precoUnitario"));
+        etapas.add(Aggregation.group("nomeProduto")
+                .sum("qtd").as("qtd")
+                .sum(ArithmeticOperators.Multiply.valueOf("qtd").multiplyBy("precoUnitario")).as("receita"));
         etapas.add(Aggregation.project("qtd", "receita").and("_id").as("produto").andExclude("_id"));
         etapas.add(Aggregation.sort(Sort.Direction.DESC, "qtd"));
         etapas.add(Aggregation.limit(limite));

@@ -1,4 +1,4 @@
-﻿package com.umc.pediupatrao.service;
+package com.umc.pediupatrao.service;
 
 import com.umc.pediupatrao.dto.PedidoRequest;
 import com.umc.pediupatrao.entity.Alteracao;

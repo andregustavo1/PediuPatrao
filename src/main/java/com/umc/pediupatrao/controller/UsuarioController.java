@@ -1,4 +1,4 @@
-﻿package com.umc.pediupatrao.controller;
+package com.umc.pediupatrao.controller;
 
 import com.umc.pediupatrao.entity.Usuario;
 

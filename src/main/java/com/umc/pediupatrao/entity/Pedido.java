@@ -1,4 +1,4 @@
-﻿package com.umc.pediupatrao.entity;
+package com.umc.pediupatrao.entity;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -8,6 +8,8 @@ import java.util.List;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.mapping.FieldType;
 
 @Data
 @Document(collection = "pedidos")
@@ -20,8 +22,11 @@ public class Pedido {
     private String clienteId;
     private String clienteNome;
     private List<ItemPedido> itens = new ArrayList<>();
+    @Field(targetType = FieldType.DECIMAL128)
     private BigDecimal subtotal = BigDecimal.ZERO;
+    @Field(targetType = FieldType.DECIMAL128)
     private BigDecimal percentualDesconto = BigDecimal.ZERO;
+    @Field(targetType = FieldType.DECIMAL128)
     private BigDecimal total = BigDecimal.ZERO;
     private StatusPedido status;
     private String responsavelEntrada;

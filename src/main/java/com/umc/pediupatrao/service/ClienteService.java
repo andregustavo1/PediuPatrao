@@ -1,4 +1,4 @@
-﻿package com.umc.pediupatrao.service;
+package com.umc.pediupatrao.service;
 import com.umc.pediupatrao.entity.Alteracao;
 import com.umc.pediupatrao.entity.Cliente;
 import com.umc.pediupatrao.repository.ClienteRepository;
